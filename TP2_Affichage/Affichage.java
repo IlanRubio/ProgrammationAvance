@@ -17,13 +17,13 @@ public class Affichage extends Thread{
 	public Affichage (String txt){texte=txt;}
 	
 	public void run(){
-		sem.syncWait();
+		//sem.syncWait();
 	    synchronized (System.out) { //section critique
 	    for (int i=0; i<texte.length(); i++){
 		    System.out.print(texte.charAt(i));
 		    try {sleep(400);} catch(InterruptedException e){};
 		}
-		sem.syncSignal();
+		//sem.syncSignal();
 	    }
 	}
 }
