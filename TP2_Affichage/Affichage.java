@@ -10,9 +10,9 @@ import java.lang.String;
 class Exclusion{};
 public class Affichage extends Thread{
 	String texte;
-	semaphoreBinaire sem = new semaphoreBinaire(0);
+	semaphoreBinaire sem = new semaphoreBinaire(1);
         
-     static Exclusion exclusionMutuelle = new Exclusion();
+	//static Exclusion exclusionMutuelle = new Exclusion();
 
 	public Affichage (String txt){texte=txt;}
 	
@@ -21,7 +21,7 @@ public class Affichage extends Thread{
 	    synchronized (System.out) { //section critique
 	    for (int i=0; i<texte.length(); i++){
 		    System.out.print(texte.charAt(i));
-		    try {sleep(100);} catch(InterruptedException e){};
+		    try {sleep(400);} catch(InterruptedException e){};
 		}
 		sem.syncSignal();
 	    }
