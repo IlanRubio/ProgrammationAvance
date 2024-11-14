@@ -1,5 +1,9 @@
 # Programmation Avancée
 
+RUBIO Ilan INFA-3
+
+Utilisation de Chat GPT pour la réalisation des TPs
+
 ## Sommaire
 
 - [Introduction](#introduction)
@@ -10,10 +14,14 @@
 - [Conclusion](#conclusion)
 
 ## Introduction
-Introduction au sujet de la programmation avancée...
+La programmation avancée joue un rôle fondamental dans le développement de compétences. 
+Ce rapport met en avant mes réflexions lors de ces tps et quelques notions qui sont importantes.Il rend compte des différents travaux réalisés.
+Pour ce faire, les codes sont à dispositions et renseignés ainsi que mes sources, me permettant de pouvoir retrouver des informations plus précises.
 
+Ce rapport contient une partie pour chaque tp réalisé. Dans chaque partie, on retrovera des éléments de réponse au TP ainsi que des informations 
+concernant différents thèmes du cours.
 ## TP0
-Architecture matériel des ordinateurs de la salle G26.
+Architecture matérielle des ordinateurs de la salle G26.
 
 | Composant | Détails                                                          |
 |-----------|------------------------------------------------------------------|
@@ -569,10 +577,84 @@ public class Affichage extends Thread{
 }
 ```
 
-Pour voir l'affichage de ce tp, on peut utiliser la méthode `Main`.
+Pour voir l'affichage de ce tp, on peut utiliser la méthode `MainTP3`.
 
 ## TP3
-Contenu du TP3...
+![ConceptionTP3.png](ConceptionTP3.png)
+
+Pour ce tp, je me suis aidé du site https://blog.paumard.org/cours/java-api/chap05-concurrent-queues.html
+
+Ce site donne un exemple avec une boulangerie alors que sur le TP, il faut le faire avec une boite au lettre.
+
+Le producteur dépose la lettre et le consommateur lit la lettre.
+
+Pour le TP, j'ai alors écrit 3 classes `BoiteAuLettre`, `Consommateur` et `Producteur`.
+Il y a également la classe `MainTP3` pour lancer les threads.
+
+Dans ces classes, j'ai repéré que les ressources critiques se trouvent dans les classes `Producteur` et `Consommateur`.
+
+```java
+public class Producteur implements Runnable {
+    private final BoiteAuLettre bal;
+    private semaphoreGlobal semaphore;
+
+    public Producteur(BoiteAuLettre bal, semaphoreGlobal semaphore) {
+        this.bal = bal;
+        this.semaphore = semaphore;
+    }
+
+    @Override
+    public void run() {
+        try (Scanner scanner = new Scanner(System.in)) {
+            String lettre;
+            do {
+                Thread.sleep(1000);
+                semaphore.syncWait();
+                System.out.print("Entrez une lettre (Q pour quitter) : ");
+                lettre = scanner.nextLine();
+                bal.deposer(lettre);
+                semaphore.syncSignal();
+            } while (!lettre.equals("Q"));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+}
+
+```
+Dans cette classe, on peut remarquer que la section critique se trouve le do, de la méthode run.
+Ainsi, il faut alors placer `semaphore.syncWait()` avant cette ressource et `semaphore.syncSignal()` à la fin de cette ressource.
+
+On retrouve le même principe sur la classe `Consommateur`.
+
+```java
+public class Consommateur implements Runnable {
+    private final BoiteAuLettre bal;
+    private semaphoreGlobal semaphore;
+
+    public Consommateur(BoiteAuLettre bal, semaphoreGlobal semaphore) {
+        this.bal = bal;
+        this.semaphore=semaphore;
+    }
+
+    @Override
+    public void run() {
+        try {
+            String lettre;
+            do {
+                Thread.sleep(1000);
+                semaphore.syncWait();
+                lettre = bal.retirer();
+                System.out.println("Lettre lue : " + lettre);
+                semaphore.syncSignal();
+            } while (!lettre.equals("Q"));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+}
+```
 
 ## Conclusion
-Conclusion au sujet de la programmation avancée...
+Ces tps m'ont permis de mettre en application les notions vu en cours concernant la programmation parallèle, les threads.
+De plus, j'ai pu comprendre et identifier les sections critiques dans une portion de code.
