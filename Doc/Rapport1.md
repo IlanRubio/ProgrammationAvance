@@ -125,14 +125,15 @@ public class TpMobile {
 Pour que le mobile fasse le retour, il faut alors ajouter une boucle, dans la méthode run de la classe `UnMobile` permettant de faire le chemin dans le sens contraire. 
 
 ```java
-for (sonDebDessin = saLargeur - sonPas; sonDebDessin > 0; sonDebDessin -= sonPas) {
-    repaint();
-    try {
-        Thread.sleep(sonTemps);
-    } catch (InterruptedException telleExcp) {
-        telleExcp.printStackTrace();
+public void run(){
+    for (sonDebDessin = saLargeur - sonPas; sonDebDessin > 0; sonDebDessin -= sonPas) {
+        repaint();
+        try {
+            Thread.sleep(sonTemps);
+        } catch (InterruptedException telleExcp) {
+            telleExcp.printStackTrace();
     }
-}
+}}
 ```
 
 Pour la suite, j'ai créé deux autres mobiles qui effectuent le même mouvement que le premier. Pour se faire, il fallait instancier deux nouveaux mobiles dans la classe `UneFenetre`.
@@ -255,14 +256,16 @@ ressource.` cf - CM2 - Programmation parallèle
 
 Ainsi dans ce code la section critique est la boucle suivante dans la classe `UnMobile`.
 ```java
-for (sonDebDessin = saLargeur; sonDebDessin < 2 * saLargeur - sonPas; sonDebDessin += sonPas) {
-                repaint();
-                try {
-                    Thread.sleep(sonTemps);
-                } catch (InterruptedException telleExcp) {
-                    telleExcp.printStackTrace();
-                }
-            }
+public void run(){
+    for (sonDebDessin = saLargeur; sonDebDessin < 2 * saLargeur - sonPas; sonDebDessin += sonPas) {
+        repaint();
+        try {
+            Thread.sleep(sonTemps);
+        } catch (InterruptedException telleExcp) {
+            telleExcp.printStackTrace();
+        }
+    }
+}
 ```
 
 Ainsi pour empêcher l'accès à plusieurs mobiles dans cette deuxième colonne, j'ai utilisé une classe sémaphore pour permettre l'accès à un thread à la fois.
@@ -276,7 +279,8 @@ Il y a deux primtives pour les gestions des accès avec :
 - Wait() : permet l’accès à une ressource
 - Signal() : permet la libération de la ressource
 
-```
+``` 
+cf - CM2 - Programmation parallèle
 
 Classe mère des sémaphores : 
 ```java
@@ -416,9 +420,156 @@ int sonTemps = (int) (Math.random() * ((40 - 5) + 1)) + 5;
 ```
 
 Ainsi, les mobiles sont fonctionnels et fonctionnent sur 3 colonnes, avec un seul mobile à la fois circulant dans celle du milieu.
-Vous pouvez essayer les mobiles avec `TpMobile`
+Vous pouvez essayer les mobiles avec `TpMobile`.
+
 ## TP2
-Contenu du TP2...
+Ce tp a été réalisé en 3 étapes principales : 
+- Dans un premier temps, on a utilisé une classe Exclusion
+- Ensuite, on a utilisé la méthode synchronized
+- Enfin, on a créé des classes sémaphores et on l'a utilisé
+
+
+**Les principes du Verrou MUTEX** : 
+- Un seul processus peut se trouver en section critique à un instant t
+- Lorsqu'un processus est bloqué hors d'une section critique, alors un autre processus peut entrer en section critique
+- Si plusieurs ressources critiques bloquées en attente d'entrée en section critique et aucun processus en section critique alors 
+un des processus en attente peut entrer dans la section critique.
+- La solution est la même pour tous les processus
+
+Ces quatres principes forment le verrou MUTEX.
+cf - CM2 - Programmation parallèle
+
+
+1. Avec la classe Exclusion
+
+```java
+class Exclusion{};
+public class Affichage extends Thread{
+	String texte;
+	static semaphoreBinaire sem = new semaphoreBinaire(1);
+        
+	static Exclusion exclusionMutuelle = new Exclusion();
+
+	public Affichage (String txt){texte=txt;}
+	
+	public void run(){
+	    for (int i=0; i<texte.length(); i++){
+		    System.out.print(texte.charAt(i));
+		    try {sleep(400);} catch(InterruptedException e){};
+		}
+	}
+}
+```
+
+La classe Exclusion permet de contrôler l'accès aux ressources.
+
+2. La méthode synchronized
+
+Cette méthode permet de contrôler l'accès aux ressources partagées. C'est-à-dire que la méthode permet de garantir qu'un seul thread à la fois peut accéder à une section critique.
+
+Afin de pouvoir utiliser la méthode synchronized, il faut dans un premier temps repérer la section critique afin de pouvoir l'isoler
+et appliquer la méthode sur la bonne portion de code.
+
+```java
+public class Affichage extends Thread{
+	String texte;
+	static semaphoreBinaire sem = new semaphoreBinaire(1);
+
+	public Affichage (String txt){texte=txt;}
+	
+	public void run(){
+	    for (int i=0; i<texte.length(); i++){
+		    System.out.print(texte.charAt(i));
+		    try {sleep(400);} catch(InterruptedException e){};
+		}
+	}
+}
+```
+On peut repérer que dans la méthode run, la section critique est la boucle for avec comme ressource critique le `System.out`.
+
+Il faut ainsi alors utiliser la méthode synchronized sur cette partie de code.
+```java
+public void run(){
+    synchronized (System.out) { //section critique
+	    for (int i=0; i<texte.length(); i++){
+		    System.out.print(texte.charAt(i));
+		    try {sleep(400);} catch(InterruptedException e){};
+		}
+    }
+}
+```
+
+3. Sémaphore
+
+Pour changer de la méthode synchronized, on peut utiliser des sémaphores.
+On instancie une classe mère `semaphore` et une classe fille `semaphoreBinaire`.
+
+```java
+public abstract class semaphore {
+
+    protected int valeur=0; // nombre de ressource
+
+    protected semaphore (int valeurInitiale){
+	valeur = valeurInitiale>0 ? valeurInitiale:0;
+    } // ? -> contraction de if, then, else
+
+    public synchronized void syncWait(){
+	try {
+	    while(valeur<=0){
+		wait();
+        }
+	    valeur--;
+	} catch(InterruptedException e){}
+    }
+
+    public synchronized void syncSignal(){
+	if(++valeur > 0) notifyAll();
+    }
+}
+
+```
+
+De cette classe, on instancie la classe fille `semaphoreBinaire`.
+```java
+
+public final class semaphoreBinaire extends semaphore {
+public semaphoreBinaire(int valeurInitiale){
+	super((valeurInitiale != 0) ? 1:0);
+	//System.out.print(valeurInitiale);
+}
+public final synchronized void syncSignal(){
+	super.syncSignal();
+	//System.out.print(valeur);
+	if (valeur>1) valeur = 1;
+}
+}
+```
+
+Cette classe permet :
+- un accès exclusif d'un seul thread à une ressource partagée.
+- de s'assurer que la valeur ne dépasse jamais 1, et donc qu'un seul thread peut "libérer" ou "signaler" le sémaphore à la fois, grâce à l'utilisation de SyncSignal.
+- de gérer correctement les threads pour éviter des conflits, grâce à la synchronisation permis dans la méthode syncSignal.
+
+Pour utiliser les sémaphores dans cette classe `Affichage`, il faut modifier le code pour utiliser les méthodes syncSignal et syncWait.
+```java
+public class Affichage extends Thread{
+	String texte;
+	static semaphoreBinaire sem = new semaphoreBinaire(1);
+    
+	public Affichage (String txt){texte=txt;}
+	
+	public void run(){
+		sem.syncWait();
+	    for (int i=0; i<texte.length(); i++){
+		    System.out.print(texte.charAt(i));
+		    try {sleep(400);} catch(InterruptedException e){};
+		}
+		sem.syncSignal();
+	}
+}
+```
+
+Pour voir l'affichage de ce tp, on peut utiliser la méthode `Main`.
 
 ## TP3
 Contenu du TP3...

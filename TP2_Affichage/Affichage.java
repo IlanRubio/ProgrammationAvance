@@ -1,6 +1,3 @@
- /**
- * 
- */
 import java.io.*;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -18,7 +15,7 @@ public class Affichage extends Thread{
 	
 	public void run(){
 		sem.syncWait();
-	    //synchronized (System.out) { //section critique
+			//synchronized (System.out) { //section critique
 	    for (int i=0; i<texte.length(); i++){
 		    System.out.print(texte.charAt(i));
 		    try {sleep(400);} catch(InterruptedException e){};
