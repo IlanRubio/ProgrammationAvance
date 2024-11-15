@@ -2,27 +2,24 @@ import java.util.Scanner;
 
 public class Producteur implements Runnable {
     private final BoiteAuLettre bal;
-    private semaphoreGlobal semaphore;
 
-    public Producteur(BoiteAuLettre bal, semaphoreGlobal semaphore) {
+    public Producteur(BoiteAuLettre bal) {
         this.bal = bal;
-        this.semaphore = semaphore;
     }
 
     @Override
     public void run() {
-        try (Scanner scanner = new Scanner(System.in)) {
-            String lettre;
-            do {
-                Thread.sleep(1000);
-                semaphore.syncWait();
-                System.out.print("Entrez une lettre (Q pour quitter) : ");
-                lettre = scanner.nextLine();
-                bal.deposer(lettre);
-                semaphore.syncSignal();
-            } while (!lettre.equals("Q"));
+        try {
+            for (char lettre = 'A'; lettre <= 'Z'; lettre++) {
+                System.out.println("Producteur : Dépôt de la lettre -> " + lettre);
+                bal.deposer(String.valueOf(lettre));
+                Thread.sleep(500); // Pause de 500 ms pour ralentir le producteur
+            }
+            System.out.println("Producteur : Dépôt de la lettre spéciale '*'.");
+            bal.deposer("*");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            System.out.println("Producteur interrompu.");
         }
     }
 }

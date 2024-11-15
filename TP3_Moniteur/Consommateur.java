@@ -1,25 +1,25 @@
 public class Consommateur implements Runnable {
     private final BoiteAuLettre bal;
-    private semaphoreGlobal semaphore;
 
-    public Consommateur(BoiteAuLettre bal, semaphoreGlobal semaphore) {
+    public Consommateur(BoiteAuLettre bal) {
         this.bal = bal;
-        this.semaphore=semaphore;
     }
 
     @Override
     public void run() {
+        System.out.println("Consommateur : Thread démarré.");
         try {
             String lettre;
             do {
-                Thread.sleep(1000);
-                semaphore.syncWait();
                 lettre = bal.retirer();
-                System.out.println("Lettre lue : " + lettre);
-                semaphore.syncSignal();
-            } while (!lettre.equals("Q"));
+                System.out.println("Consommateur : Lettre consommée -> " + lettre);
+                Thread.sleep(500); // Pause de 1 seconde pour ralentir le consommateur
+            } while (!lettre.equals("*"));
+            System.out.println("Consommateur : Fin du traitement.");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            System.out.println("Consommateur interrompu.");
         }
+
     }
 }

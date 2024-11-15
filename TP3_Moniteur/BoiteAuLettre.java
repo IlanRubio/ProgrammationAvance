@@ -1,25 +1,23 @@
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
 public class BoiteAuLettre {
     private String chLettre;
     private Boolean disponible = false;
+    private BlockingQueue<String> tampon;
 
-    public BoiteAuLettre() {
-
+    public BoiteAuLettre(int capacite) {
+        this.tampon = new ArrayBlockingQueue<>(capacite);
     }
+
     public synchronized void deposer(String lettre) throws InterruptedException {
-        while (disponible) {
-            wait(); // Attend que la boîte soit vide
-        }
-        this.chLettre = lettre;
-        disponible = true;
-        notifyAll(); // Notifie le consommateur
+        tampon.put(lettre); // Bloque si le tampon est plein
+        System.out.println("BAL : Lettre déposée -> " + lettre);
     }
     public synchronized String retirer() throws InterruptedException {
-        while (!disponible) {
-            wait(); // Attend qu'une lettre soit disponible
-        }
-        disponible = false;
-        notifyAll(); // Notifie le producteur
-        return chLettre;
+        String lettre = tampon.take(); // Bloque si le tampon est vide
+        System.out.println("BAL : Lettre retirée -> " + lettre);
+        return lettre;
     }
 
 }
