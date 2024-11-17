@@ -655,6 +655,34 @@ public class Consommateur implements Runnable {
 }
 ```
 
+Pour la suite, il fallait utiliser la classe BlockingQueue de Java, pour implémenter différemment la BAL.
+Pour ce faire, je me suis alors aidé et inspiré du site mentionné plus tôt.
+
+```java
+public class BoiteAuLettre {
+    private String chLettre;
+    private Boolean disponible = false;
+    private BlockingQueue<String> tampon;
+
+    public BoiteAuLettre(int capacite) {
+        this.tampon = new ArrayBlockingQueue<>(capacite);
+    }
+
+    public synchronized void deposer(String lettre) throws InterruptedException {
+        tampon.put(lettre); // Bloque si le tampon est plein
+        System.out.println("BAL : Lettre déposée -> " + lettre);
+    }
+    public synchronized String retirer() throws InterruptedException {
+        String lettre = tampon.take(); // Bloque si le tampon est vide
+        System.out.println("BAL : Lettre retirée -> " + lettre);
+        return lettre;
+    }
+
+}
+```
+
+J'ai donc fait appel à la classe et je l'ai instancié.
+
 ## Conclusion
 Ces tps m'ont permis de mettre en application les notions vu en cours concernant la programmation parallèle, les threads.
 De plus, j'ai pu comprendre et identifier les sections critiques dans une portion de code.
