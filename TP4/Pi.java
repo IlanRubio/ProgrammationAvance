@@ -1,3 +1,5 @@
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -6,6 +8,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import static java.lang.Math.abs;
 
 /**
  * Approximates PI using the Monte Carlo method.  Demonstrates
@@ -17,9 +21,21 @@ public class Pi
     {
 	long total=0;
 	// 10 workers, 50000 iterations each
-	total = new Master().doRun(50000, 10);
+	total = new Master().doRun(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
 	System.out.println("total from Master = " + total);
-    }
+
+	String data = "\n"+Integer.parseInt(args[0]) * Integer.parseInt(args[1]) +", " + abs(Master.pi - Math.PI) / Math.PI +", " + Integer.parseInt(args[1]) +", " + (Master.stopTime - Master.startTime) + "ms";
+
+	FileWriter writer = null;
+	try {
+		writer = new FileWriter("TP4/out_pi_G21_4c.txt",true);
+		writer.write(data);
+		writer.close();
+	} catch (IOException e) {
+		throw new RuntimeException(e);
+	}
+
+	}
 }
 
 /**
@@ -27,10 +43,13 @@ public class Pi
  * and aggregates the results.
  */
 class Master {
+	static long startTime;
+	static long stopTime;
+	static double pi;
     public long doRun(int totalCount, int numWorkers) throws InterruptedException, ExecutionException 
     {
 
-	long startTime = System.currentTimeMillis();
+	startTime = System.currentTimeMillis();
 
 	// Create a collection of tasks
 	List<Callable<Long>> tasks = new ArrayList<Callable<Long>>();
@@ -51,18 +70,17 @@ class Master {
 		// until result from corresponding worker is ready.
 		total += f.get();
 	    }
-	double pi = 4.0 * total / totalCount / numWorkers;
+	pi = 4.0 * total / totalCount / numWorkers;
 
-	long stopTime = System.currentTimeMillis();
+	stopTime = System.currentTimeMillis();
 
-	System.out.println("\nPi : " + pi );
 	System.out.println("Error: " + (Math.abs((pi - Math.PI)) / Math.PI) +"\n");
 
 	System.out.println("Ntot: " + totalCount*numWorkers);
 	System.out.println("Available processors: " + numWorkers);
 	System.out.println("Time Duration (ms): " + (stopTime - startTime) + "\n");
 
-	System.out.println( (Math.abs((pi - Math.PI)) / Math.PI) +" "+ totalCount*numWorkers +" "+ numWorkers +" "+ (stopTime - startTime));
+	System.out.println((Math.abs((pi - Math.PI)) / Math.PI) +" "+ totalCount*numWorkers +" "+ numWorkers +" "+ (stopTime - startTime));
 
 	exec.shutdown();
 	return total;
