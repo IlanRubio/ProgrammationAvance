@@ -24,11 +24,11 @@ public class Pi
 	total = new Master().doRun(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
 	System.out.println("total from Master = " + total);
 
-	String data = "\n"+Integer.parseInt(args[0]) * Integer.parseInt(args[1]) +", " + abs(Master.pi - Math.PI) / Math.PI +", " + Integer.parseInt(args[1]) +", " + (Master.stopTime - Master.startTime) + "ms";
+	String data = "\n"+Integer.parseInt(args[0]) * Integer.parseInt(args[1]) +"," + abs(Master.pi - Math.PI) / Math.PI +"," + Integer.parseInt(args[1]) +"," + (Master.stopTime - Master.startTime);
 
 	FileWriter writer = null;
 	try {
-		writer = new FileWriter("TP4/out_pi_G21_4c.txt",true);
+		writer = new FileWriter("TP4/Out_pi/out_pi_G26_4c.csv",true);
 		writer.write(data);
 		writer.close();
 	} catch (IOException e) {

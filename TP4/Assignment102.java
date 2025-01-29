@@ -55,11 +55,11 @@ public class Assignment102 {
 
 
 		System.out.println("Difference to exact value of pi: " + (value - Math.PI));
-		String data = "\n"+Integer.parseInt(args[0]) +", " + abs(value - Math.PI) / Math.PI +", " + Integer.parseInt(args[1]) +", " + (stopTime - startTime) + "ms" ;
+		String data = "\n"+Integer.parseInt(args[0]) +"," + abs(value - Math.PI) / Math.PI +"," + Integer.parseInt(args[1]) +"," + (stopTime - startTime);
 
         FileWriter writer = null;
         try {
-            writer = new FileWriter("TP4/out_assignment102_G21_4c.txt",true);
+            writer = new FileWriter("TP4\\Out_assignment\\out_assignment102_G26_4c.csv",true);
 			writer.write(data);
 			writer.close();
         } catch (IOException e) {
