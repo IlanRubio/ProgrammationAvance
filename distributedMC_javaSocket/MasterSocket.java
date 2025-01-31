@@ -1,5 +1,8 @@
 import java.io.*;
 import java.net.*;
+
+import static java.lang.Math.abs;
+
 /** Master is a client. It makes requests to numWorkers.
  *   
  */
@@ -16,7 +19,7 @@ public class MasterSocket {
     public static void main(String[] args) throws Exception {
 
 	// MC parameters
-	int totalCount = 16000000; // total number of throws on a Worker
+	int totalCount = 20000000; // total number of throws on a Worker
 	int total = 0; // total number of throws inside quarter of disk
 	double pi; 
 
@@ -93,8 +96,18 @@ public class MasterSocket {
 	   System.out.println("Ntot: " + totalCount*numWorkers);
 	   System.out.println("Available processors: " + numWorkers);
 	   System.out.println("Time Duration (ms): " + (stopTime - startTime) + "\n");
-	   
-	   System.out.println( (Math.abs((pi - Math.PI)) / Math.PI) +" "+ totalCount*numWorkers +" "+ numWorkers +" "+ (stopTime - startTime));
+
+
+	   String data = "\n"+(totalCount*numWorkers +","+ Math.abs((pi - Math.PI)) / Math.PI) +","+ numWorkers +","+ (stopTime - startTime);
+	   System.out.println(data);
+	   FileWriter writer = null;
+	   try {
+		   writer = new FileWriter("distributedMC_javaSocket\\Out_socket\\out_socket_G26_4c_1w_12e7.csv",true);
+		   writer.write(data);
+		   writer.close();
+	   } catch (IOException e) {
+		   throw new RuntimeException(e);
+	   }
 
 	   System.out.println("\n Repeat computation (y/N): ");
 	   try{

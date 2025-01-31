@@ -24,9 +24,11 @@ def plot_speedup(csv_file, label):
 plt.figure(figsize=(8, 5))
 
 # Tracer les courbes pour chaque fichier
-plot_speedup("TP4/Out_pi/out_pi_G26_4c_12e6.csv", label='Speedup G26 12e6')
+#plot_speedup("TP4/Out_pi/out_pi_G26_4c_12e6.csv", label='Speedup G26 12e6')
 plot_speedup("TP4/Out_pi/out_pi_G26_4c_12e7.csv", label='Speedup G26 12e7')
-plot_speedup("TP4/Out_pi/out_pi_G26_4c_12e8.csv", label='Speedup G26 12e8')
+#plot_speedup("TP4/Out_pi/out_pi_G26_4c_12e8.csv", label='Speedup G26 12e8')
+#plot_speedup("distributedMC_javaSocket\Out_socket\out_socket_G26_4c_1w.csv", label='Speedup G26 mw')
+plot_speedup("distributedMC_javaSocket\Out_socket\out_socket_G26_4c_1w_12e7.csv", label='Speedup G26 12e7 mw')
 
 # Configuration des axes et de la légende
 plt.xlabel("Nombre de Threads")

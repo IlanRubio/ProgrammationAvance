@@ -2,6 +2,8 @@ import java.io.*;
 import java.net.*;
 import java.util.Random;
 
+import static java.lang.Math.abs;
+
 
 /**
  * Worker is a server. It computes PI by Monte Carlo method and sends
@@ -29,22 +31,26 @@ public class WorkerSocket {
         // PrintWriter pWrite for writing message to Master
         PrintWriter pWrite = new PrintWriter(new BufferedWriter(new OutputStreamWriter(soc.getOutputStream())), true);
 	String str;
-    //String str2;
+    int nbworker;
         while (isRunning) {
             str = bRead.readLine();          // read message from Master
             if (!(str.equals("END"))) {
-                int numIterations = Integer.parseInt(str); // Assuming Master sends the number of iterations
-                System.out.println("Server receives totalCount = " + numIterations);
+                System.out.println("Server receives totalCount = " + str);
+                nbworker = 1;
+                System.out.println("Server receives totalCount = " + nbworker);
 
+                //int numIterations = Integer.parseInt(str); // Assuming Master sends the number of iterations
+                //System.out.println("Server receives totalCount = " + numIterations);
                 // Compute PI using Monte Carlo method
-                long circleCount = computeMonteCarlo(numIterations);
-                //total = new Master().doRun(Integer.parseInt(str), Integer.parseInt(str2));
+                //long circleCount = computeMonteCarlo(numIterations);
+
+                long circleCount = new Master().doRun(Integer.parseInt(str), nbworker);
 
                 // Send the number of points inside the quarter of the disk
-                pWrite.println(circleCount);
-                //pWrite.println(total);
+                pWrite.println(circleCount/nbworker);
 
-	    }else{
+
+            }else{
 		isRunning=false;
 	    }
         }
