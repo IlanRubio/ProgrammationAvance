@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.*;
 import java.util.Random;
 
+
 /**
  * Worker is a server. It computes PI by Monte Carlo method and sends
  * the result to Master.
@@ -28,6 +29,7 @@ public class WorkerSocket {
         // PrintWriter pWrite for writing message to Master
         PrintWriter pWrite = new PrintWriter(new BufferedWriter(new OutputStreamWriter(soc.getOutputStream())), true);
 	String str;
+    //String str2;
         while (isRunning) {
             str = bRead.readLine();          // read message from Master
             if (!(str.equals("END"))) {
@@ -35,18 +37,12 @@ public class WorkerSocket {
                 System.out.println("Server receives totalCount = " + numIterations);
 
                 // Compute PI using Monte Carlo method
-                long circleCount = 0;
-                Random prng = new Random();
-                for (int j = 0; j < numIterations; j++) {
-                    double x = prng.nextDouble();
-                    double y = prng.nextDouble();
-                    if ((x * x + y * y) < 1) {
-                        ++circleCount;
-                    }
-                }
+                long circleCount = computeMonteCarlo(numIterations);
+                //total = new Master().doRun(Integer.parseInt(str), Integer.parseInt(str2));
 
                 // Send the number of points inside the quarter of the disk
                 pWrite.println(circleCount);
+                //pWrite.println(total);
 
 	    }else{
 		isRunning=false;
@@ -56,4 +52,16 @@ public class WorkerSocket {
         pWrite.close();
         soc.close();
    }
+    /** Monte Carlo simulation to estimate Pi */
+    private static int computeMonteCarlo(int totalCount) {
+        int inside = 0;
+        Random rand = new Random();
+
+        for (int i = 0; i < totalCount; i++) {
+            double x = rand.nextDouble();
+            double y = rand.nextDouble();
+            if (x * x + y * y <= 1) inside++;
+        }
+        return inside;
+    }
 }
