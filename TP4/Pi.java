@@ -28,7 +28,7 @@ public class Pi
 
 	FileWriter writer = null;
 	try {
-		writer = new FileWriter("TP4/Out_pi/out_pi_G26_4c.csv",true);
+		writer = new FileWriter("TP4/Out_pi/out_pi_G26_4c_12e6_sfaible.csv",true);
 		writer.write(data);
 		writer.close();
 	} catch (IOException e) {

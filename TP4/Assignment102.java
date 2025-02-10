@@ -59,7 +59,7 @@ public class Assignment102 {
 
         FileWriter writer = null;
         try {
-            writer = new FileWriter("TP4\\Out_assignment\\out_assignment102_G26_4c.csv",true);
+            writer = new FileWriter("TP4\\Out_assignment\\out_assignment102_G26_4c_12e5_sfaible.csv",true);
 			writer.write(data);
 			writer.close();
         } catch (IOException e) {
