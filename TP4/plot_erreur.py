@@ -44,4 +44,4 @@ def plot_errors_from_csv(folder_path):
     plt.grid(True, which="both", linestyle="--", linewidth=0.5)
     plt.show()
 
-plot_errors_from_csv('TP4/Out_pi')
+plot_errors_from_csv('distributedMC_javaSocket\Out_socket')

@@ -166,7 +166,7 @@ En effet, la majeure partie de temps de calculs de se fait dans la section criti
 Cela empêche de pouvoir paralléliser efficacement ce code.
 
 #### Erreur
-**Prendre les données et faire les graphes**
+![Graphe erreur](Graphe/erreur_assignement.png)
 
 ### Pi.java
 **FAIRE UML**
@@ -218,7 +218,7 @@ Repose sur l'implémentation de Callable et de Futures.
   de processus P. On l’exprime comme le rapport du temps d’éxécution sur
   un processus T1, sur le temps d’exécution sur P processus, Tp. On le calcule avec ```Sp = T1/Tp```
 On peut le représenter avec la courbe suivante :
-  ![Graphe speedup](SppedUp.png)
+  ![Graphe speedup](SpeedUp.png)
 
 * **Scalabilité forte** : La scalabilité forte évalue la capacité d’un programme à diminuer son temps d’exécution lorsque le nombre de cœurs augmente, tout en conservant une charge de travail constante. 
 Elle mesure ainsi l’efficacité avec laquelle le programme utilise les ressources supplémentaires.

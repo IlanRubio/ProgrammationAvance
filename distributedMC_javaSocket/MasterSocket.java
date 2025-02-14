@@ -7,8 +7,8 @@ import static java.lang.Math.abs;
  *   
  */
 public class MasterSocket {
-    static int maxServer = 8;
-    static final int[] tab_port = {25545,25546,25547,25548,25549,25550,25551,25552};
+    static int maxServer = 12;
+    static final int[] tab_port = {25545,25546,25547,25548,25549,25550,25551,25552,25553,25554,25555,25556};
     static String[] tab_total_workers = new String[maxServer];
     static final String ip = "127.0.0.1";
     static BufferedReader[] reader = new BufferedReader[maxServer];
@@ -19,7 +19,7 @@ public class MasterSocket {
     public static void main(String[] args) throws Exception {
 
 	// MC parameters
-	int totalCount = 30000000; // total number of throws on a Worker
+	int totalCount = 20000000; // total number of throws on a Worker
 	int total = 0; // total number of throws inside quarter of disk
 	double pi; 
 
