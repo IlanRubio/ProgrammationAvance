@@ -133,14 +133,37 @@ On peut retrouver ce code avec le code Pi.java.
 #### Fonctionnement
 ![UML Assignement102](Assignement102.jpg)
 
-#### Scalabilité forte
 
+La classe ```PiMonteCarlo```gère l'exécution du calcul de Monte-Carlo en utilisant le parallélisme avec l'API Concurrent.
+Cette classe contient une classe interne ```MonteCarlo```. Cette classe implémente Runnable.
+
+* Simule un tirage de coordonnées (x, y) et vérifie s'il tombe dans le quart de cercle.
+* Si ```x²+y² <= 1 ```, alors le point est dans le cercle et on incrémente nAtomSuccess.
+
+La classe ```Assignment102``` : 
+* Instancie un objet ```PiMonteCarlo``` avec deux paramèetres le nombre de lancers et le nombre de threads.
+* Mesure le temps d'exécution.
+* Retourne le résultat
+
+#### Scalabilité forte
 ![Graphe de scalabilité forte](Graphe/Scalabite_forte_assignement.png)
+On peut voir que la scalabilité forte est très mauvaise. On remarque qu'elle est presque constante malgré une baisse 
+lorsque l'on passe à 6 processus.
+
+On peut donc en déduire que ce code n'est pas efficace. C'est à dire que la parallélisation
+ne permet pas de rendre ce code plus performant et donc d'estimer Pi plus rapidement.
+
 #### Scalabilité faible
 ![Graphe de scalabilité faible](Graphe/Scalabite_faible_assignement.png)
 **refaire le graphe**
+
 #### Comparaison
 ![comparaison scalabilite](Graphe/Comparaison_assignement.png)
+
+On peut remarquer que les graphes de scalabilités fortes et faibles sont presque équivalentes.
+Cela peut s'expliquer par le fait la parallélisation de code n'est pas efficace.
+En effet, la majeure partie de temps de calculs de se fait dans la section critique.
+Cela empêche de pouvoir paralléliser efficacement ce code.
 
 #### Erreur
 **Prendre les données et faire les graphes**
@@ -149,6 +172,26 @@ On peut retrouver ce code avec le code Pi.java.
 **FAIRE UML**
 
 #### Fonctionnement
+
+Repose sur l'implémentation de Callable et de Futures.
+
+``Classe Pi``
+* Elle récupère les arguments d'entrée (nombre d'itérations et nombre de threads).
+* Elle exécute l'approximation via la classe Master.
+
+``Classe Master``
+* Cette classe orchestre l'exécution parallèle des tâches en : 
+  * Créant une liste de tâches ``List<Callable<Long>>``
+  * Les exécutant avec un ``ExecutorService``
+  * Récupérant les résultats et calculant 𝜋
+* S'assure de l'exécution parallèle des tâches.
+* S'occupe de la récupération des résultats et calcul de π.
+
+``Classe Worker``
+* Chaque thread exécute une instance de ``Worker`` qui :
+  * Génère ``numIterations`` points aléatoires.
+  * Compte combien tombent dans le quart de cercle.
+
 #### Scalabilité forte
 
 ![Graphe de scalabilité forte](Graphe/Scalabite_forte_pi.png)
@@ -182,3 +225,59 @@ Elle mesure ainsi l’efficacité avec laquelle le programme utilise les ressour
 
 * **Scalabilité faible** : La scalabilité faible mesure la capacité d’un programme à maintenir un temps d’exécution stable lorsque la charge de travail et le nombre de cœurs augmentent. 
 Elle évalue dans quelle mesure le programme peut traiter efficacement une charge de travail croissante en exploitant davantage de ressources.
+
+* **ISO/IEC 25010** : La norme **ISO/IEC 25010** est un standard international qui définit un modèle de qualité pour l'évaluation des logiciels et des systèmes informatiques.
+  Elle appartient à la famille des normes SQuaRE (Software Product Quality Requirements and Evaluation).
+
+* **ISO/IEC 25022** : La norme ISO/IEC 25022 fait partie de la série SQuaRE (Software Product Quality Requirements and Evaluation) et se concentre sur l'évaluation de la qualité en usage des systèmes et logiciels.
+
+* **Future** : Un Future est un objet qui représente le résultat d'une tâche asynchrone qui s'exécutera dans le futur. 
+Il agit comme un conteneur pour un résultat qui n'est pas encore disponible.
+Les Futures permettent de :
+  * Vérifier si la tâche est terminée
+  * Attendre que la tâche se termine et récupérer le résultat
+
+## Performance 
+
+Pour étudier, les performances des codes, on utilise les normes **ISO/IEC 25010** et **ISO/IEC 25022**.
+
+### ISO/IEC 25010
+
+Cette norme est utilisée pour évaluer et améliorer la qualité des logiciels dans des domaines variés comme le développement d’applications, les systèmes embarqués. 
+Elle permet aux entreprises de garantir un niveau de qualité optimal pour leurs produits.
+
+#### Le modèle de qualité en usage
+
+Il définit 5 caractéristiques liées à l'expérience utilisateur :
+
+* **Efficacité** (Réalisation des objectifs)
+* **Efficience** (Effort minimal pour atteindre un objectif)
+* **Satisfaction** (Confort et confiance de l'utilisateur)
+* **Sécurité** en usage (Prévention des erreurs humaines)
+* **Couverture** du contexte d'utilisation (Adaptabilité à différents contextes)
+
+####  Le modèle de qualité du produit
+
+Il définit 8 caractéristiques de qualité logicielle :
+
+* **Fonctionnalité** (Pertinence fonctionnelle, Exactitude, Complétude)
+* **Performance et efficacité** (Temps de réponse, Utilisation des ressources)
+* **Compatibilité** (Interopérabilité, Cohabitation avec d'autres systèmes)
+* **Utilisabilité** (Facilité d'utilisation, Accessibilité)
+* **Fiabilité** (Maturité, Disponibilité, Tolérance aux pannes)
+* **Sécurité** (Confidentialité, Intégrité, Authentification)
+* **Maintenabilité** (Modularité, Facilité de correction et d'évolution)
+* **Portabilité** (Adaptabilité, Capacité d'installation)
+
+### ISO/IEC 25022
+* Aide à identifier les points d’amélioration pour optimiser l’expérience utilisateur.
+* Permet d’évaluer un produit avant son lancement ou pendant son utilisation réelle.
+* Fournit des mesures objectives pour comparer différents systèmes ou versions.
+
+####  Le modèle de qualité du produit
+
+Effectiveness : 
+
+Efficiency : 
+
+#### Le modèle de qualité en usage
