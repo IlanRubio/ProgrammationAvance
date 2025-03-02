@@ -11,6 +11,21 @@ Cette approche est particulièrement utile pour des problématiques complexes o�
 
 Pour réaliser ce rapport, des intelligences artificielles ont été utilisées.
 
+### Configuration machine
+
+Pour effectuer toutes les mesures, j'ai utilisé une machine en G26 avec la configuration suivante :
+
+Voici une machine de l'IUT (en G26) sur laquelle j'ai aussi effectué tous les tests :
+
+| Composant         | Détails                                 |
+|-------------------|-----------------------------------------|
+| RAM               | 32 GB                                   |
+| Processeur        | Intel(R) Core(TM) i7-7700 CPU @ 3.60GHz |
+| Coeurs            | 4 coeurs physique                       |
+| Cache de niveau 1 | 256 Ko                                  |
+| Cache de niveau 2 | 1,0 Mo                                  |
+| Cache de niveau 3 | 8,0 Mo                                  |
+
 ## Monte Carlo pour calculer π
 
 Calcul de Pi par une méthode de Monte Carlo.
@@ -129,9 +144,9 @@ On peut retrouver ce code avec le code Pi.java.
 ## Java
 
 ### Assignement102
+![UML Assignement102](Assignement102.jpg)
 
 #### Fonctionnement
-![UML Assignement102](Assignement102.jpg)
 
 
 La classe ```PiMonteCarlo```gère l'exécution du calcul de Monte-Carlo en utilisant le parallélisme avec l'API Concurrent.
@@ -155,7 +170,9 @@ ne permet pas de rendre ce code plus performant et donc d'estimer Pi plus rapide
 
 #### Scalabilité faible
 ![Graphe de scalabilité faible](Graphe/Scalabite_faible_assignement.png)
-**refaire le graphe**
+
+À partir de 2 threads, la performance se dégrade fortement, atteignant presque zéro.
+
 
 #### Comparaison
 ![comparaison scalabilite](Graphe/Comparaison_assignement.png)
@@ -169,7 +186,7 @@ Cela empêche de pouvoir paralléliser efficacement ce code.
 ![Graphe erreur](Graphe/erreur_assignement.png)
 
 ### Pi.java
-**FAIRE UML**
+![UML Pi.java](Uml_Pi.png)
 
 #### Fonctionnement
 
@@ -195,22 +212,91 @@ Repose sur l'implémentation de Callable et de Futures.
 #### Scalabilité forte
 
 ![Graphe de scalabilité forte](Graphe/Scalabite_forte_pi.png)
+
+Les courbes montrent que la scalabilité forte est meilleure avec un plus grand nombre de points (12e8 > 12e7 > 12e6).
+
 #### Scalabilité faible
+
 ![Graphe de scalabilité faible](Graphe/Scalabite_faible_pi.png)
+La courbe décroissante confirme un problème de scalabilité faible : au lieu d’accélérer l’exécution, l’ajout de threads réduit l’efficacité.
+
 #### Comparaison
+
 ![Graphe de comparaison scalabilite](Graphe/Comparaison_pi.png)
+
 #### Erreur
 ![Graphe erreur](Graphe/erreur_pi.png)
+
+
 ### MasterSocket / WorkerSocket
 
-#### Fonctionnement
 ![UML Master](MasterSocket.jpg)
+![UML socket](Uml_socket.png)
+
+#### Fonctionnement
+``Classe MasterSocket``
+
+Cette classe orchestre l'exécution distribuée des tâches en :
+* Se connectant aux Workers via des sockets TCP/IP.
+* Envoyant le nombre d’itérations à exécuter.
+* Attendant et collectant les résultats des Workers.
+* Calculant l’estimation de 𝜋 à partir des résultats.
+* Assure la gestion des connexions réseau et la coordination des Workers.
+
+``Classe WorkerSocket``
+
+Chaque Worker est un serveur qui :
+* Attend une connexion d’un MasterSocket.
+* Reçoit le nombre d’itérations à effectuer.
+* Lance le calcul Monte Carlo :
+  * Génère numIterations points aléatoires.
+  * Compte combien tombent dans le quart de cercle.
+  * Envoie son résultat au Master.
+  * Se termine lorsque le Master envoie le message "END".
+
+``Communication & Synchronisation``
+
+* Le Master envoie des requêtes TCP aux Workers.
+* Les Workers retournent leurs résultats au Master.
+* Le Master attend la réponse de tous les Workers avant de calculer la valeur finale de 𝜋.
+
+Cette architecture repose sur un modèle distribué avec sockets, ce qui permet d'exécuter le calcul sur plusieurs machines en parallèle. 
+
 #### Scalabilité forte
-**Prendre les données et faire les graphes**
+
+![Graphe de scalabilité forte](Graphe/Scalabite_forte_socket.png)
+
+* Lorsque la charge de travail est plus élevée (12e7), le speedup est meilleur, ce qui signifie que le programme bénéficie mieux du parallélisme.
+* À l'inverse, avec une charge plus faible (12e6), la scalabilité est moins bonne, indiquant un ratio communication/calcul défavorable.
+
+Une charge de travail plus importante améliore la scalabilité, mais on ne parvient pas à atteindre un speedup idéal.
+
 #### Scalabilité faible
-**Prendre les données et faire les graphes**
+
+![Graphe de scalabilité faible](Graphe/Scalabite_faible_socket.png)
+
+Le speedup décroît fortement avec l'augmentation du nombre de threads. 
+Cela signifie que l'ajout de threads ralentit plutôt qu'il n'améliore les performances.
+
+#### Comparaison
+
+![Graphe de comparaison scalabilite](Graphe/Comparaison_socket.png)
+
+
 #### Erreur
-**Prendre les données et faire les graphes**
+
+![Graphe erreur](Graphe/erreur_socket.png)
+
+On observe que l'erreur médiane (points rouges) diminue globalement à mesure que le nombre de processus augmente,
+ce qui est cohérent avec l'approche Monte Carlo : plus il y a d'itérations (ou de points simulés), plus l'estimation de π est précise.
+
+L'augmentation du nombre de Workers améliore la précision du calcul, mais il peut y avoir une certaine variance en raison de la nature probabiliste de Monte Carlo.
+
+### Dans la salle G26
+
+Pour se rapprocher au mieux de la courbe idéale, on utilise plusieurs machine de la salle G26.
+
+Un poste sera le master et les autres postes seront les différents workers.
 
 ## Définition
 
@@ -241,43 +327,47 @@ Les Futures permettent de :
 
 Pour étudier, les performances des codes, on utilise les normes **ISO/IEC 25010** et **ISO/IEC 25022**.
 
-### ISO/IEC 25010
+On utilise deux modèles pour évaluer les systèmes 
 
-Cette norme est utilisée pour évaluer et améliorer la qualité des logiciels dans des domaines variés comme le développement d’applications, les systèmes embarqués. 
-Elle permet aux entreprises de garantir un niveau de qualité optimal pour leurs produits.
+### Quality In Use Model
 
-#### Le modèle de qualité en usage
+Ce modèle permet d’évaluer la qualité d’un logiciel selon les besoins l’utilisateur final. 
+Il met l’accent sur l’expérience réelle d’utilisation en prenant en compte divers critères essentiels, tels que l’efficacité, la fiabilité ou encore le confort. 
+Ce modèle vise à mesurer la capacité d’un logiciel à répondre aux besoins des utilisateurs tout en minimisant les risques liés à son utilisation.
 
-Il définit 5 caractéristiques liées à l'expérience utilisateur :
 
-* **Efficacité** (Réalisation des objectifs)
-* **Efficience** (Effort minimal pour atteindre un objectif)
-* **Satisfaction** (Confort et confiance de l'utilisateur)
-* **Sécurité** en usage (Prévention des erreurs humaines)
-* **Couverture** du contexte d'utilisation (Adaptabilité à différents contextes)
+| **Critère**                                                                                | **Définition**                                                                                                      |
+|--------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
+| **Efficacité (Efficiency)**                                                                | Capacité du système à permettre à l’utilisateur d’accomplir ses tâches en utilisant les ressources adéquates.       |
+| **Efficacité fonctionnelle (Effectiveness)**                                               | Capacité du logiciel à aider l’utilisateur à atteindre ses objectifs de manière correcte et complète.               |
+| **Utilité (Usefulness)**                                                                   | Pertinence du logiciel dans l’accomplissement de ses fonctions .                                                    |
+| **Fiabilité et confiance (Trust)**                                                         | Degré de confiance de l’utilisateur dans la stabilité et la fiabilité du logiciel .                                 |
+| **Expérience utilisateur agréable (Pleasure)**                                             | Niveau de satisfaction et de plaisir ressenti lors de l’utilisation, en particulier pour les nouveaux utilisateurs. |
+| **Confort d’utilisation (Comfort)**                                                        | Facilité d’utilisation du logiciel, notamment en termes d’ergonomie et de modularité.                               |
+| **Risques économiques (Economic risk)**                                                    | Coût lié à la maintenance du logiciel, aux mises à jour et aux éventuels problèmes financiers associés.             |
+| **Réduction des risques pour la santé et la sécurité (Health and safety risk mitigation)** | Minimisation des dangers potentiels pour les utilisateurs.                                                          |
+| **Réduction des impacts environnementaux (Environmental risk mitigation)**                 | Prévention des risques pour l’environnement.                                                                        |
+| **Adéquation au contexte (Context completeness)**                                          | Capacité du logiciel à remplir efficacement son rôle dans un contexte d’utilisation spécifique.                     |
+| **Flexibilité (Flexibility)**                                                              | Adaptabilité du logiciel à différents usages ou besoins sans nécessiter de modifications majeures.                  |
 
-####  Le modèle de qualité du produit
 
-Il définit 8 caractéristiques de qualité logicielle :
 
-* **Fonctionnalité** (Pertinence fonctionnelle, Exactitude, Complétude)
-* **Performance et efficacité** (Temps de réponse, Utilisation des ressources)
-* **Compatibilité** (Interopérabilité, Cohabitation avec d'autres systèmes)
-* **Utilisabilité** (Facilité d'utilisation, Accessibilité)
-* **Fiabilité** (Maturité, Disponibilité, Tolérance aux pannes)
-* **Sécurité** (Confidentialité, Intégrité, Authentification)
-* **Maintenabilité** (Modularité, Facilité de correction et d'évolution)
-* **Portabilité** (Adaptabilité, Capacité d'installation)
+### Product Quality Model
 
-### ISO/IEC 25022
-* Aide à identifier les points d’amélioration pour optimiser l’expérience utilisateur.
-* Permet d’évaluer un produit avant son lancement ou pendant son utilisation réelle.
-* Fournit des mesures objectives pour comparer différents systèmes ou versions.
+Le Product Quality Model est un modèle qui permet d’évaluer la qualité d’un logiciel, indépendamment de son utilisation finale. 
+Contrairement au Quality In Use Model, qui se concentre sur l’expérience utilisateur, le Product Quality Model analyse les caractéristiques internes et externes du logiciel pour déterminer s’il est bien conçu et performant.
 
-####  Le modèle de qualité du produit
+Ce modèle repose sur plusieurs critères définis notamment par la norme ISO/IEC 25010, qui est une évolution de la norme ISO/IEC 9126. 
+Voici les principales caractéristiques de la qualité d’un logiciel selon ce modèle :
 
-Effectiveness : 
+| **Caractéristique**                                      | **Définition**                                                                                                                      |
+|----------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| **Fonctionnalité** (*Functional Suitability*)            | Capacité du logiciel à fournir des fonctions qui répondent aux besoins spécifiés de manière complète et correcte.                   |
+| **Fiabilité** (*Reliability*)                            | Capacité du logiciel à fonctionner sans défaillance dans des conditions spécifiques pendant une période donnée.                     |
+| **Performance et efficacité** (*Performance Efficiency*) | Utilisation optimale des ressources système pour garantir une bonne réactivité et un temps d’exécution acceptable.                  |
+| **Compatibilité** (*Compatibility*)                      | Capacité du logiciel à fonctionner correctement dans différents environnements et à interagir avec d’autres systèmes.               |
+| **Utilisabilité** (*Usability*)                          | Facilité avec laquelle un utilisateur peut comprendre, apprendre et utiliser le logiciel efficacement.                              |
+| **Sécurité** (*Security*)                                | Protection des données et du système contre les accès non autorisés et les attaques.                                                |
+| **Maintenabilité** (*Maintainability*)                   | Facilité de modification du logiciel pour corriger des erreurs, améliorer ses performances ou ajouter de nouvelles fonctionnalités. |
+| **Portabilité** (*Portability*)                          | Capacité du logiciel à être transféré et utilisé sur différents environnements sans nécessiter de modifications importantes.        |
 
-Efficiency : 
-
-#### Le modèle de qualité en usage
