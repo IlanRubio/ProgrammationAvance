@@ -179,11 +179,16 @@ ne permet pas de rendre ce code plus performant et donc d'estimer Pi plus rapide
 
 On peut remarquer que les graphes de scalabilités fortes et faibles sont presque équivalentes.
 Cela peut s'expliquer par le fait la parallélisation de code n'est pas efficace.
-En effet, la majeure partie de temps de calculs de se fait dans la section critique.
+En effet, la majeure partie de temps de calculs de ce fait dans la section critique.
 Cela empêche de pouvoir paralléliser efficacement ce code.
 
 #### Erreur
 ![Graphe erreur](Graphe/erreur_assignement.png)
+
+#### Amélioration
+
+Ce code ne se parallélise pas très bien, car une majorité des calculs se font en ressource critique.
+Une manière de l'améliorer est de faire les calculs pour les points hors de la cible. Ainsi, on effectura un calcul sur 25% au lieu de 75% en ressource critique.
 
 ### Pi.java
 ![UML Pi.java](Uml_Pi.png)
@@ -371,3 +376,15 @@ Voici les principales caractéristiques de la qualité d’un logiciel selon ce 
 | **Maintenabilité** (*Maintainability*)                   | Facilité de modification du logiciel pour corriger des erreurs, améliorer ses performances ou ajouter de nouvelles fonctionnalités. |
 | **Portabilité** (*Portability*)                          | Capacité du logiciel à être transféré et utilisé sur différents environnements sans nécessiter de modifications importantes.        |
 
+## Conclusion
+
+Ce rapport a exploré la méthode de Monte Carlo pour estimer la valeur de π et ses différentes implémentations en programmation parallèle et distribuée.
+Nous avons analysé plusieurs approches, du parallélisme de boucle à l’architecture Master/Worker avec sockets, afin d’évaluer leur impact sur la scalabilité et la performance.
+
+Les résultats montrent que la parallélisation de Monte Carlo n'est pas toujours efficace en raison des sections critiques limitant les gains de performance. L
+’approche Master/Worker, bien que plus scalable, souffre d’un coût de communication non négligeable. L’étude des métriques de performance à l’aide des normes ISO/IEC 25010 et ISO/IEC 25022 a permis de mieux comprendre les forces et limites de chaque implémentation.
+
+En conclusion, bien que la méthode de Monte Carlo soit une solution élégante pour l’approximation de π, son efficacité en parallèle dépend fortement de l’architecture utilisée et de la gestion des ressources critiques.
+
+Enfin, on a pu constater que la méthode qui utilise le mieux la parallélisation est le code Master/Worker socket. Si l'on exécute le code sur différente machine, 
+donc plusieurs workers, la parallélisation fonctionne mieux, car on peut ainsi utiliser plus de cœurs différents.

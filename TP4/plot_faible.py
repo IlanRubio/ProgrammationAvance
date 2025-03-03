@@ -31,4 +31,4 @@ def plot_speedup_faible(csv_file):
     plt.show()
 
 # Exemple d'appel de la fonction
-plot_speedup_faible("TP4/Out_pi/out_pi_G26_4c_12e6.csv")
+plot_speedup_faible("distributedMC_javaSocket/Out_socket/out_socket_G26_4c_1w_12e7_sfaible.csv")

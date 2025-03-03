@@ -39,8 +39,11 @@ plt.figure(figsize=(8, 5))
 #plot_speedup("TP4\Out_assignment\out_assignment102_G26_4c_12e6_sfaible.csv", label='Scalabilité faible G26 12e6')
 #plot_speedup("TP4\Out_assignment\out_assignment102_G26_4c_12e5_sfaible.csv", label='Scalabilité faible G26 12e5')
 
-plot_speedup("distributedMC_javaSocket\Out_socket\out_socket_G26_4c_1w_12e7.csv", label='Scalabité forte G26 12e7')
-plot_speedup("distributedMC_javaSocket\Out_socket\out_socket_G26_4c_1w_12e7_sfaible.csv", label='Scalabité faible G26 12e7')
+plot_speedup("distributedMC_javaSocket/Out_socket/out_socket_G26_4c_1w_12e7.csv", label='Scalabité forte G26 12e7')
+#plot_speedup("distributedMC_javaSocket/Out_socket/out_socket_G26_4c_1w_12e7_sfaible.csv", label='Scalabité faible G26 12e7')
+
+plot_speedup("distributedMC_javaSocket/Out_socket/out_socket_G26_4c_1w_12e6.csv", label='Scalabité forte G26 12e6')
+#plot_speedup("distributedMC_javaSocket/Out_socket/out_socket_G26_4c_1w_12e6_sfaible.csv", label='Scalabité faible G26 12e6')
 # Configuration des axes et de la légende
 plt.xlabel("Nombre de Threads")
 plt.ylabel("Speedup")
