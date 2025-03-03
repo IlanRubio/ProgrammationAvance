@@ -93,7 +93,7 @@ endfor
 PI = 4*(n_cible/ntotal);
 ```
 Dans cette version de l'algorithme tout est executé séquentiellement.
-Afin de l'améliorer et pouvoir le paralléliser, il faut dans un premier temps déterminer quelles sont les différents tâches.
+Afin de l'améliorer et pouvoir le paralléliser, il faut dans un premier temps, déterminer quelles sont les différentes tâches.
 
 On remarque alors 2 tâches : 
 1. **Tâche 1** : Générer et compter n_cible
@@ -165,13 +165,13 @@ La classe ```Assignment102``` :
 On peut voir que la scalabilité forte est très mauvaise. On remarque qu'elle est presque constante malgré une baisse 
 lorsque l'on passe à 6 processus.
 
-On peut donc en déduire que ce code n'est pas efficace. C'est à dire que la parallélisation
-ne permet pas de rendre ce code plus performant et donc d'estimer Pi plus rapidement.
+On peut donc en déduire que ce code n'est pas efficace. C'est-à-dire que la parallélisation
+ne permet pas de rendre ce code plus performant et ainsi d'estimer Pi plus rapidement.
 
 #### Scalabilité faible
 ![Graphe de scalabilité faible](Graphe/Scalabite_faible_assignement.png)
 
-À partir de 2 threads, la performance se dégrade fortement, atteignant presque zéro.
+À partir de 2 threads, la performance se dégrade fortement, atteignant presque zéro 
 
 
 #### Comparaison
@@ -185,10 +185,12 @@ Cela empêche de pouvoir paralléliser efficacement ce code.
 #### Erreur
 ![Graphe erreur](Graphe/erreur_assignement.png)
 
+On peut remarquer que l'erreur a une tendance à diminuer lorsque le nombre de processus augmente.
+
 #### Amélioration
 
 Ce code ne se parallélise pas très bien, car une majorité des calculs se font en ressource critique.
-Une manière de l'améliorer est de faire les calculs pour les points hors de la cible. Ainsi, on effectura un calcul sur 25% au lieu de 75% en ressource critique.
+Une manière de l'améliorer est de faire les calculs pour les points hors de la cible. Ainsi, on effectuera un calcul sur 25% au lieu de 75% en ressource critique.
 
 ### Pi.java
 ![UML Pi.java](Uml_Pi.png)
@@ -219,7 +221,7 @@ Repose sur l'implémentation de Callable et de Futures.
 ![Graphe de scalabilité forte](Graphe/Scalabite_forte_pi.png)
 
 Les courbes montrent que la scalabilité forte est meilleure avec un plus grand nombre de points (12e8 > 12e7 > 12e6).
-
+On remarque également qu'elle est bonne jusqu'à 4 processus puis qu'elle diminue en augmentant le nombre de processus.
 #### Scalabilité faible
 
 ![Graphe de scalabilité faible](Graphe/Scalabite_faible_pi.png)
@@ -232,6 +234,7 @@ La courbe décroissante confirme un problème de scalabilité faible : au lieu d
 #### Erreur
 ![Graphe erreur](Graphe/erreur_pi.png)
 
+On peut remarquer que l'erreur a une tendance à diminuer lorsque le nombre de processus augmente.
 
 ### MasterSocket / WorkerSocket
 
@@ -299,40 +302,43 @@ L'augmentation du nombre de Workers améliore la précision du calcul, mais il p
 
 ### Dans la salle G26
 
-Pour se rapprocher au mieux de la courbe idéale, on utilise plusieurs machine de la salle G26.
+Pour se rapprocher au mieux de la courbe idéale, on utilise plusieurs machines de la salle G26.
 
 Un poste sera le master et les autres postes seront les différents workers.
 
-## Définition
+#### Installation 
+Pour commencer, il faut aller sur centos.
+Il faut alors exécuter plusieurs commandes afin d'avoir le projet et de pouvoir le rendre fonctionnel.
 
-* **Speedup** : L’accélération Sp est le gain de vitesse d’exécution en fonction du nombre
-  de processus P. On l’exprime comme le rapport du temps d’éxécution sur
-  un processus T1, sur le temps d’exécution sur P processus, Tp. On le calcule avec ```Sp = T1/Tp```
-On peut le représenter avec la courbe suivante :
-  ![Graphe speedup](SpeedUp.png)
+Il faut installer java avec ```sudo yum install java-devel```.
 
-* **Scalabilité forte** : La scalabilité forte évalue la capacité d’un programme à diminuer son temps d’exécution lorsque le nombre de cœurs augmente, tout en conservant une charge de travail constante. 
-Elle mesure ainsi l’efficacité avec laquelle le programme utilise les ressources supplémentaires.
+Pour pouvoir se connecter aux autres machines, il faut alors désactiver le firewall. On peut le faire avec la commande
+```sudo systemctl stop firewalld```
 
-* **Scalabilité faible** : La scalabilité faible mesure la capacité d’un programme à maintenir un temps d’exécution stable lorsque la charge de travail et le nombre de cœurs augmentent. 
-Elle évalue dans quelle mesure le programme peut traiter efficacement une charge de travail croissante en exploitant davantage de ressources.
+Il faut ensuite récupérer le projet avec ```gitclone``` et ensuite la compiler avec la commande ```make```.
+Cela lancera le fichier Makefile qui compilera ainsi les différentes classes.
 
-* **ISO/IEC 25010** : La norme **ISO/IEC 25010** est un standard international qui définit un modèle de qualité pour l'évaluation des logiciels et des systèmes informatiques.
-  Elle appartient à la famille des normes SQuaRE (Software Product Quality Requirements and Evaluation).
+#### Expérience
 
-* **ISO/IEC 25022** : La norme ISO/IEC 25022 fait partie de la série SQuaRE (Software Product Quality Requirements and Evaluation) et se concentre sur l'évaluation de la qualité en usage des systèmes et logiciels.
+On va faire une expérience de scalabilité faible. 
+On va donc faire des calculs avec le nombre de processus allant de 1 à 64.
 
-* **Future** : Un Future est un objet qui représente le résultat d'une tâche asynchrone qui s'exécutera dans le futur. 
-Il agit comme un conteneur pour un résultat qui n'est pas encore disponible.
-Les Futures permettent de :
-  * Vérifier si la tâche est terminée
-  * Attendre que la tâche se termine et récupérer le résultat
+| **Nombre de processus** | **Nombre de thread** | **Temps (ms)** | **Erreur**            |
+|-------------------------|----------------------|----------------|-----------------------|
+| 1                       | 2e9                  | 68039          | x                     |
+| 2                       | 4e9                  | x              | x                     |
+| 4                       | 8e9                  | 70436          | 1.074792104395961E-5  |
+| 8                       | 16e9                 | 70450          | 4.610508550924495E-6  |
+| 16                      | 32e9                 | 70484          | 1.2763940615949628E-6 |
+| 32                      | 64e9                 | 71908          | 2.8263219557848443E-6 |
+| 64                      | 128e9                | 70890          | 1.3741649324992772E-6 |
+
 
 ## Performance 
 
 Pour étudier, les performances des codes, on utilise les normes **ISO/IEC 25010** et **ISO/IEC 25022**.
 
-On utilise deux modèles pour évaluer les systèmes 
+On utilise deux modèles pour évaluer les systèmes que l'on a mis en place.
 
 ### Quality In Use Model
 
@@ -376,13 +382,39 @@ Voici les principales caractéristiques de la qualité d’un logiciel selon ce 
 | **Maintenabilité** (*Maintainability*)                   | Facilité de modification du logiciel pour corriger des erreurs, améliorer ses performances ou ajouter de nouvelles fonctionnalités. |
 | **Portabilité** (*Portability*)                          | Capacité du logiciel à être transféré et utilisé sur différents environnements sans nécessiter de modifications importantes.        |
 
+## Définition
+
+* **Speedup** : L’accélération Sp est le gain de vitesse d’exécution en fonction du nombre
+  de processus P. On l’exprime comme le rapport du temps d’éxécution sur
+  un processus T1, sur le temps d’exécution sur P processus, Tp. On le calcule avec ```Sp = T1/Tp```
+  On peut le représenter avec la courbe suivante :
+  ![Graphe speedup](SpeedUp.png)
+
+* **Scalabilité forte** : La scalabilité forte évalue la capacité d’un programme à diminuer son temps d’exécution lorsque le nombre de cœurs augmente, tout en conservant une charge de travail constante.
+  Elle mesure ainsi l’efficacité avec laquelle le programme utilise les ressources supplémentaires.
+
+* **Scalabilité faible** : La scalabilité faible mesure la capacité d’un programme à maintenir un temps d’exécution stable lorsque la charge de travail et le nombre de cœurs augmentent.
+  Elle évalue dans quelle mesure le programme peut traiter efficacement une charge de travail croissante en exploitant davantage de ressources.
+
+* **ISO/IEC 25010** : La norme **ISO/IEC 25010** est un standard international qui définit un modèle de qualité pour l'évaluation des logiciels et des systèmes informatiques.
+  Elle appartient à la famille des normes SQuaRE (Software Product Quality Requirements and Evaluation).
+
+* **ISO/IEC 25022** : La norme ISO/IEC 25022 fait partie de la série SQuaRE (Software Product Quality Requirements and Evaluation) et se concentre sur l'évaluation de la qualité en usage des systèmes et logiciels.
+
+* **Future** : Une Future est un objet qui représente le résultat d'une tâche asynchrone qui s'exécutera dans le futur.
+  Il agit comme un conteneur pour un résultat qui n'est pas encore disponible.
+  Les Futures permettent de :
+  * Vérifier si la tâche est terminée
+  * Attendre que la tâche se termine et récupérer le résultat
+  
+
 ## Conclusion
 
 Ce rapport a exploré la méthode de Monte Carlo pour estimer la valeur de π et ses différentes implémentations en programmation parallèle et distribuée.
 Nous avons analysé plusieurs approches, du parallélisme de boucle à l’architecture Master/Worker avec sockets, afin d’évaluer leur impact sur la scalabilité et la performance.
 
-Les résultats montrent que la parallélisation de Monte Carlo n'est pas toujours efficace en raison des sections critiques limitant les gains de performance. L
-’approche Master/Worker, bien que plus scalable, souffre d’un coût de communication non négligeable. L’étude des métriques de performance à l’aide des normes ISO/IEC 25010 et ISO/IEC 25022 a permis de mieux comprendre les forces et limites de chaque implémentation.
+Les résultats montrent que la parallélisation de Monte Carlo n'est pas toujours efficace en raison des sections critiques limitant les gains de performance. 
+L’approche Master/Worker, bien que plus scalable, souffre d’un coût de communication non négligeable. L’étude des métriques de performance à l’aide des normes ISO/IEC 25010 et ISO/IEC 25022 a permis de mieux comprendre les forces et limites de chaque implémentation.
 
 En conclusion, bien que la méthode de Monte Carlo soit une solution élégante pour l’approximation de π, son efficacité en parallèle dépend fortement de l’architecture utilisée et de la gestion des ressources critiques.
 
