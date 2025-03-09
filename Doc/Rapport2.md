@@ -15,8 +15,6 @@ Pour réaliser ce rapport, des intelligences artificielles ont été utilisées.
 
 Pour effectuer toutes les mesures, j'ai utilisé une machine en G26 avec la configuration suivante :
 
-Voici une machine de l'IUT (en G26) sur laquelle j'ai aussi effectué tous les tests :
-
 | Composant         | Détails                                 |
 |-------------------|-----------------------------------------|
 | RAM               | 32 GB                                   |
@@ -332,6 +330,11 @@ On va donc faire des calculs avec le nombre de processus allant de 1 à 64.
 | 16                      | 32e9                 | 70484          | 1.2763940615949628E-6 |
 | 32                      | 64e9                 | 71908          | 2.8263219557848443E-6 |
 | 64                      | 128e9                | 70890          | 1.3741649324992772E-6 |
+
+![Graphe de scalabilité faible](Graphe/Scalabite_faible_partage.png)
+
+Avec cette méthode, on peut observer que l'on a un très bon graphe de scalabilité faible.
+On peut en déduire que cette parallélisation est très efficace.
 
 
 ## Performance 
